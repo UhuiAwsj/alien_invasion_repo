@@ -34,8 +34,8 @@ class AlienInvasion:
         while True:
             self._check_events()
             self.ship.update()
-            self.bullets.update()
             self._update_bullets()
+            self._update_aliens()
             self._update_screen()
             self.clock.tick(60)
 
@@ -76,22 +76,28 @@ class AlienInvasion:
             self.bullets.add(new_bullet)
 
     def _create_fleet(self):
-        """创建一个外星人,再不断添加，直到没有空间添加外星人为止"""
+        """创建外星舰队"""
+        # 创建一个外星人,再不断添加，直到没有空间添加外星人为止
         # 外星人的间距为外星人的宽度
         alien = Alien(self)
-        alien_width = alien.rect.width
+        alien_width, alien_height = alien.rect.size
 
-        current_x = alien_width
-        while current_x < (self.settings.screen_width - 2 * alien_width):
-            self._create_alien(current_x)
-            current_x += 2 * alien_width
+        current_x, current_y = alien_width, alien_height
+        while current_y < (self.settings.screen_height - 3 * alien_height):
+            while current_x < (self.settings.screen_width - 2 * alien_width):
+                self._create_alien(current_x, current_y)
+                current_x += 2 * alien_width
+            # 添加一行外星人后，重置 x 坐标，递增 y 坐标
+            current_x = alien_width
+            current_y += 2 * alien_height
             
 
-    def _create_alien(self,x_position):
+    def _create_alien(self,x_position, y_position):
         """创建一个外星人并将其放在当前行"""
         new_alien = Alien(self)
         new_alien.x = x_position
         new_alien.rect.x = x_position
+        new_alien.rect.y = y_position
         self.aliens.add(new_alien)
 
     def _update_bullets(self):
@@ -102,6 +108,10 @@ class AlienInvasion:
         for bullet in self.bullets.copy():
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
+
+    def _update_aliens(self):
+        """更新外星人群中所有外星人的位置"""
+        self.aliens.update()
 
     def _update_screen(self):
         """更新屏幕上的图像，并切换到新屏幕"""
