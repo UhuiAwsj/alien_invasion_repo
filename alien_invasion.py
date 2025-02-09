@@ -14,6 +14,8 @@ from time import sleep
 
 from game_stats import GameStats
 
+from button import Button
+
 class AlienInvasion:
     """管理游戏资源和行为的类"""
 
@@ -32,11 +34,13 @@ class AlienInvasion:
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
-        self.game_active = True
-
         self._create_fleet()
+        self.game_active = False
 
+        # 创建 Play 按钮
+        self.play_button = Button(self, "Play")
 
+        
     def run_game(self):
         """开始游戏的主循环"""
         while True:
@@ -170,6 +174,10 @@ class AlienInvasion:
             bullet.draw_bullet()
         self.ship.blitme()
         self.aliens.draw(self.screen)
+
+        # 如果游戏处于非活动状态，就绘制 Play 按钮
+        if not self.stats.game_active:
+            self.play_button.draw_button()
 
         # 让最近绘制的屏幕可见 
         pygame.display.flip()
